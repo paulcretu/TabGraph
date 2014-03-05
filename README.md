@@ -1,1 +1,1 @@
-Chrome extension for showing tab usage statistics.
+Track and graph how many tabs you have open in Chrome.
