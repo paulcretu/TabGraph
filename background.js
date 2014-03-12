@@ -14,10 +14,6 @@ var maxOpen = 0;
 // Maximum value background colors are set to. Range is 0 - 255.
 var MAX_COLOR_VALUE = 191;
 
-
-
-
-
 // Things to run when starting the extension.
 function init() {
 
@@ -33,10 +29,31 @@ function init() {
         totalRemoved++;
         update(tab);
     });
+
+    // Setup listeners for closing popup
+    initPopupCloseHack();
 }
 
 // Now run the function
 init();
+
+// Sets up the other half of the messaging hack in popup.js. See popup.js for
+// details. This half detects when the popup closes and sets the popup again.
+function initPopupCloseHack() {
+    // Receive connection
+    chrome.runtime.onConnect.addListener(function(port) {
+        // Check to see that it's the connection from the popup hack
+        if (port.name == "popupClose") {
+            // Add listener for when popup disconnects
+            port.onDisconnect.addListener(function() {
+                // Set popup
+                chrome.browserAction.setPopup({
+                    popup: "popup.html"
+                });
+            });
+        }
+    });
+}
 
 // Counts all the currently open tabs. Should only be run once, at start.
 function countTabs() {
@@ -80,7 +97,8 @@ function setIcon() {
         {imageData: draw(totalOpen, getColor(totalOpen, maxOpen))});
 }
 
-// Returns the color scaled from green to red based on the ratio of current tabs open to max tabs open.
+// Returns the color scaled from green to red based on the ratio of current tabs
+// open to max tabs open.
 function getColor(n, max) {
     var r = MAX_COLOR_VALUE;
     var g = MAX_COLOR_VALUE;
