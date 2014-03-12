@@ -16,27 +16,46 @@ var MAX_COLOR_VALUE = 191;
 
 
 
-// Count currently open tabs when script starts.
-chrome.windows.getAll(null, function (windows) {
-    for (w in windows) {
-        chrome.tabs.getAllInWindow(windows[w].id, function (tabs) {
-            for (t in tabs) {
-                totalCreated++;
-                update(t);
+
+
+// Things to run when starting the extension.
+function init() {
+
+    // Count currently open tabs when script starts.
+    countTabs();
+
+    // Listeners for created and removed tabs.
+    chrome.tabs.onCreated.addListener(function(tab) {
+        totalCreated++;
+        update(tab);
+    });
+    chrome.tabs.onRemoved.addListener(function(tab) {
+        totalRemoved++;
+        update(tab);
+    });
+}
+
+// Now run the function
+init();
+
+// Counts all the currently open tabs. Should only be run once, at start.
+function countTabs() {
+    if (totalCreated == 0) {
+        chrome.windows.getAll(null, function (windows) {
+            for (w in windows) {
+                chrome.tabs.getAllInWindow(windows[w].id, function (tabs) {
+                    for (t in tabs) {
+                        totalCreated++;
+                        update(t);
+                    }
+                });
             }
         });
+    } else  {
+        console.log("countTabs should only be run at start");
     }
-});
+}
 
-// Listeners for created and removed tabs.
-chrome.tabs.onCreated.addListener(function(tab) {
-    totalCreated++;
-    update(tab);
-});
-chrome.tabs.onRemoved.addListener(function(tab) {
-    totalRemoved++;
-    update(tab);
-});
 
 
 // Get current time with timezone offset.
