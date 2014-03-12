@@ -23,26 +23,25 @@ var MAX_COLOR_VALUE = 191;
 
 // Count currently open tabs when script starts.
 chrome.windows.getAll(null, function (windows) {
-			  for (w in windows) {
-			      chrome.tabs.getAllInWindow(windows[w].id, function (tabs) {
-							     for (t in tabs) {
-								 totalCreated++;
-								 update(t);
-							     }
-							 });
-			  }
-		      });
+    for (w in windows) {
+        chrome.tabs.getAllInWindow(windows[w].id, function (tabs) {
+            for (t in tabs) {
+                totalCreated++;
+                update(t);
+            }
+        });
+    }
+});
 
 // Listeners for created and removed tabs.
 chrome.tabs.onCreated.addListener(function(tab) {
-				      totalCreated++;
-				      update(tab);
-				  });
+    totalCreated++;
+    update(tab);
+});
 chrome.tabs.onRemoved.addListener(function(tab) {
-				      totalRemoved++;
-				      update(tab);
-				  });
-
+    totalRemoved++;
+    update(tab);
+});
 
 
 // Get current time with timezone offset for flot.
@@ -57,14 +56,14 @@ function update(tab) {
     tabTimestamps.push([getCurrentTime(), totalOpen]);
     totalOpen = totalCreated - totalRemoved;
     if (totalOpen > maxOpen)
-	maxOpen = totalOpen;
+        maxOpen = totalOpen;
     setIcon();
 }
 
 //Updates the icon area
 function setIcon() {
     chrome.browserAction.setIcon(
-	{imageData: draw(totalOpen, getColor(totalOpen, maxOpen))});
+        {imageData: draw(totalOpen, getColor(totalOpen, maxOpen))});
 }
 
 //Returns the color scaled from green to red based on the ratio of current tabs open to record number of tabs open.
@@ -72,9 +71,9 @@ function getColor(n, max) {
     var r = MAX_COLOR_VALUE;
     var g = MAX_COLOR_VALUE;
     if (n < max/2)
-	r = (n/max) * (2*MAX_COLOR_VALUE);
+        r = (n/max) * (2*MAX_COLOR_VALUE);
     if (n > max/2)
-	g = ((n/max) - 1) * -(MAX_COLOR_VALUE*2);
+        g = ((n/max) - 1) * -(MAX_COLOR_VALUE*2);
     return [parseInt(r.valueOf()), parseInt(g.valueOf()), 0, 255];
 }
 
@@ -103,19 +102,19 @@ function draw(n, color) {
     //Valued with more than 2 digits don't fit, so we add a bar underneath
     if (n >= 100) {
 
-	//Set color/weight
-	context.strokeStyle = 'rgba(255,255,255,255)';
-	context.lineWidth   = 2;
-	
-	//Draw line
-	context.beginPath();
-	context.moveTo(2, canvas.height - 3);
-	context.lineTo(canvas.width - 2,  canvas.height - 3);
-	context.stroke();
-	context.closePath();
-	
-	//Move text up
-	y -= 2;
+        //Set color/weight
+        context.strokeStyle = 'rgba(255,255,255,255)';
+        context.lineWidth   = 2;
+        
+        //Draw line
+        context.beginPath();
+        context.moveTo(2, canvas.height - 3);
+        context.lineTo(canvas.width - 2,  canvas.height - 3);
+        context.stroke();
+        context.closePath();
+        
+        //Move text up
+        y -= 2;
     }
 
     //Draw text
