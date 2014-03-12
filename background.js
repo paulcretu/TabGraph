@@ -1,22 +1,17 @@
-/* tapGraph
- * background.js
- * copyright 2012
- * */
-
-//Contains all open and closed tab objects
+// Contains all open and closed tab objects
 var tabHistory = Array();
-//Contains timestamps corresponding to tabs in tabHistory
+// Contains timestamps corresponding to tabs in tabHistory
 var tabTimestamps = Array();
 
-//Running totals for tabs
+// Running totals for tabs
 var totalCreated = 0;
 var totalRemoved = 0;
-//Total tabs currently open
+// Total tabs currently open
 var totalOpen = 0;
-//Record number of open tabs
+// Largest number of tabs ever open
 var maxOpen = 0;
 
-//Maximum value background colors are set to. Range is 0 - 255.
+// Maximum value background colors are set to. Range is 0 - 255.
 var MAX_COLOR_VALUE = 191;
 
 
@@ -44,13 +39,13 @@ chrome.tabs.onRemoved.addListener(function(tab) {
 });
 
 
-// Get current time with timezone offset for flot.
+// Get current time with timezone offset.
 function getCurrentTime() {
     time = new Date()
     return time.getTime() - (time.getTimezoneOffset() * 60 * 1000);
 }
 
-//Update the counter/history. Acts as the 'tick' function.
+// Update the counter/history
 function update(tab) {
     tabHistory.push(tab);
     tabTimestamps.push([getCurrentTime(), totalOpen]);
@@ -60,13 +55,13 @@ function update(tab) {
     setIcon();
 }
 
-//Updates the icon area
+// Updates the icon area
 function setIcon() {
     chrome.browserAction.setIcon(
         {imageData: draw(totalOpen, getColor(totalOpen, maxOpen))});
 }
 
-//Returns the color scaled from green to red based on the ratio of current tabs open to record number of tabs open.
+// Returns the color scaled from green to red based on the ratio of current tabs open to max tabs open.
 function getColor(n, max) {
     var r = MAX_COLOR_VALUE;
     var g = MAX_COLOR_VALUE;
@@ -77,6 +72,7 @@ function getColor(n, max) {
     return [parseInt(r.valueOf()), parseInt(g.valueOf()), 0, 255];
 }
 
+// Draw the extension bar icon
 function draw(n, color) {
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
@@ -85,39 +81,39 @@ function draw(n, color) {
     var y = canvas.height/2;
     var textSize = 15;
 
-    //Clear the canvas
+    // Clear the canvas
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    //Set style and fill background rectangle
+    // Set style and fill background rectangle
     context.fillStyle    = 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',127)';
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    //Set font
+    // Set font
     context.font         = 'bold ' + textSize + 'px Helvetica';
     context.textAlign    = 'center';
     context.textBaseline = 'middle';
-    //Set text color
+    // Set text color
     context.fillStyle   = "rgba(255,255,255,255)";
 
-    //Valued with more than 2 digits don't fit, so we add a bar underneath
+    // Values with more than 2 digits don't fit, so we add a bar below
     if (n >= 100) {
 
-        //Set color/weight
+        // Set color/weight
         context.strokeStyle = 'rgba(255,255,255,255)';
         context.lineWidth   = 2;
         
-        //Draw line
+        // Draw line
         context.beginPath();
         context.moveTo(2, canvas.height - 3);
         context.lineTo(canvas.width - 2,  canvas.height - 3);
         context.stroke();
         context.closePath();
         
-        //Move text up
+        // Move text up
         y -= 2;
     }
 
-    //Draw text
+    // Draw text
     context.fillText(n.toString().substr(0, 2), x, y);
     
     return context.getImageData(0, 0, 19, 19);

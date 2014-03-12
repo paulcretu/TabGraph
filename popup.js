@@ -1,11 +1,3 @@
-/* Resources
-  - http://code.google.com/chrome/extensions/windows.html#method-getAll
-  - http://code.google.com/chrome/extensions/tabs.html#method-getAllInWindow
-  - http://code.google.com/chrome/extensions/background_pages.html
-  - http://people.iola.dk/olau/flot/examples/
-  - http://flot.googlecode.com/svn/trunk/API.txt
-  */
-
 $(document).ready(function() {
     $('#total').html(
         chrome.extension.getBackgroundPage().totalOpen);
