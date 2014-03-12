@@ -29,6 +29,8 @@ init();
   to connect to the background, and using the chrome.runtime.Port.onDisconnect
   event to trigger the setting of the popup. That part of the code is in
   background.js.
+
+  http://rethrowexception.wordpress.com/2010/06/01/google-chrome-onunload-event-when-closing-popup/
 */
 function initPopupCloseHack() {
     // Unset the popup
